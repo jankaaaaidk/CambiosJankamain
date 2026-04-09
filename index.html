@@ -113,7 +113,7 @@ let historial = JSON.parse(localStorage.getItem("historial")) || [];
 // 🔹 Obtener precio
 async function obtenerPrecioFinal() {
     try {
-        const res = await fetch("https://TU-BACKEND.onrender.com/precio");
+        const res = await fetch("https://cambiosjanka.onrender.com/precio");
         const data = await res.json();
 
         tipoFinalGlobal = data.tipo;
