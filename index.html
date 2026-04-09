@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Cambio USD → ARS</title>
+
+<style>
+body {
+    font-family: Arial;
+    background: #0f172a;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.main {
+    display: flex;
+    gap: 20px;
+}
+
+.container {
+    background: #1e293b;
+    padding: 20px;
+    border-radius: 15px;
+    width: 300px;
+}
+
+.historial {
+    background: #1e293b;
+    padding: 15px;
+    border-radius: 15px;
+    width: 200px;
+}
+
+h1 {
+    text-align: center;
+}
+
+input {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: none;
+    margin-bottom: 10px;
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: none;
+    background: #22c55e;
+    color: white;
+    cursor: pointer;
+    margin-top: 5px;
+}
+
+.whatsapp {
+    background: #25D366;
+}
+
+.result {
+    margin-top: 10px;
+    background: #0f172a;
+    padding: 10px;
+    border-radius: 10px;
+}
+</style>
+
+</head>
+<body>
+
+<div class="main">
+
+<!-- 🔹 CALCULADORA -->
+<div class="container">
+<h1>💱 Cambio USD → ARS</h1>
+
+<input type="number" id="usd" placeholder="Ingrese USD">
+
+<button onclick="calcular()">Calcular</button>
+
+<div class="result">
+    <p id="tipo">Tipo: ...</p>
+    <p id="recibes">Recibes: -</p>
+    <p id="comision">Comisión: -</p>
+</div>
+
+<button class="whatsapp" onclick="irWhatsApp()">Realizar cambio</button>
+
+</div>
+
+<!-- 🔹 HISTORIAL -->
+<div class="historial">
+<h3>📊 Historial</h3>
+<p style="font-size:12px;">Actualiza cada 1 minuto</p>
+
+<ul id="lista"></ul>
+
+</div>
+
+</div>
+
+<script>
+
+let tipoFinalGlobal = 0;
+let historial = [];
+
+// 🔹 Obtener precio
+async function obtenerPrecioFinal() {
+    try {
+        const res = await fetch("https://TU-BACKEND.onrender.com/precio");
+        const data = await res.json();
+
+        tipoFinalGlobal = data.tipo;
+
+        document.getElementById("tipo").innerText =
+            "💱 Tipo: " + tipoFinalGlobal.toFixed(2);
+
+        // 🔹 Guardar historial (máx 10)
+        historial.unshift(tipoFinalGlobal.toFixed(2));
+        if (historial.length > 10) historial.pop();
+
+        actualizarHistorial();
+
+    } catch (e) {
+        console.error(e);
+    }
+}
+
+// 🔹 Mostrar historial
+function actualizarHistorial() {
+    const lista = document.getElementById("lista");
+    lista.innerHTML = "";
+
+    historial.forEach(p => {
+        const li = document.createElement("li");
+        li.innerText = p;
+        lista.appendChild(li);
+    });
+}
+
+// 🔹 Calcular
+function calcular() {
+    const usd = parseFloat(document.getElementById("usd").value);
+
+    const comision = usd * 0.025;
+    const ars = usd * tipoFinalGlobal;
+
+    document.getElementById("recibes").innerText =
+        "💰 Recibes: " + ars.toFixed(2) + " ARS";
+
+    document.getElementById("comision").innerText =
+        "🧾 Comisión: " + comision.toFixed(2) + " USD";
+}
+
+// 🔹 WhatsApp
+function irWhatsApp() {
+    const usd = document.getElementById("usd").value;
+
+    const comision = (usd * 0.025).toFixed(2);
+
+    const mensaje = `Monto a cambiar: ${usd} USD
+Dólar a: ${tipoFinalGlobal.toFixed(2)}
+Comisión: ${comision} USD`;
+
+    const url = "https://wa.me/5491162121656?text=" + encodeURIComponent(mensaje);
+
+    window.open(url, "_blank");
+}
+
+// 🔹 Actualizar cada 1 minuto
+setInterval(obtenerPrecioFinal, 60000);
+obtenerPrecioFinal();
+
+</script>
+
+</body>
+</html>
