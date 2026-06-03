@@ -2,188 +2,400 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Cambio USD → ARS</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cambio USD a ARS</title>
 
 <style>
+:root {
+    color-scheme: dark;
+    --bg: #0b1020;
+    --panel: #182235;
+    --panel-strong: #202d45;
+    --line: #33425f;
+    --text: #f8fafc;
+    --muted: #9fb0cc;
+    --green: #22c55e;
+    --green-dark: #16a34a;
+    --pink: #fb4669;
+    --yellow: #facc15;
+}
+
+* {
+    box-sizing: border-box;
+}
+
 body {
-    font-family: Arial;
-    background: #0f172a;
-    color: white;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
+    margin: 0;
+    min-height: 100vh;
+    font-family: Arial, Helvetica, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+}
+
+.page {
+    width: min(1180px, calc(100% - 32px));
+    margin: 0 auto;
+    padding: 32px 0;
 }
 
 .main {
-    display: flex;
-    gap: 20px;
+    display: grid;
+    grid-template-columns: minmax(280px, 360px) minmax(220px, 280px) 1fr;
+    gap: 18px;
+    align-items: start;
 }
 
-.container {
-    background: #1e293b;
+.panel {
+    background: var(--panel);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
     padding: 20px;
-    border-radius: 15px;
-    width: 300px;
 }
 
-.historial {
-    background: #1e293b;
-    padding: 15px;
-    border-radius: 15px;
-    width: 200px;
+h1, h2, h3 {
+    margin: 0;
+    letter-spacing: 0;
 }
 
 h1 {
+    font-size: 26px;
+    line-height: 1.15;
     text-align: center;
+}
+
+h2 {
+    font-size: 20px;
+    margin-bottom: 14px;
+}
+
+h3 {
+    font-size: 16px;
+    margin-bottom: 8px;
+}
+
+.label {
+    display: block;
+    color: var(--muted);
+    font-size: 13px;
+    margin: 18px 0 8px;
 }
 
 input {
     width: 100%;
-    padding: 10px;
+    min-height: 42px;
+    padding: 10px 12px;
     border-radius: 8px;
-    border: none;
-    margin-bottom: 10px;
+    border: 1px solid var(--line);
+    background: #0f172a;
+    color: var(--text);
+    font-size: 15px;
 }
 
 button {
     width: 100%;
-    padding: 10px;
+    min-height: 42px;
+    padding: 10px 12px;
     border-radius: 8px;
     border: none;
-    background: #22c55e;
+    background: var(--green);
     color: white;
+    font-weight: 700;
     cursor: pointer;
-    margin-top: 5px;
+    margin-top: 10px;
+}
+
+button:hover {
+    background: var(--green-dark);
+}
+
+button:disabled {
+    cursor: wait;
+    opacity: 0.65;
 }
 
 .whatsapp {
-    background: #25D366;
+    background: #25d366;
 }
 
-.result {
-    margin-top: 10px;
+.whatsapp:hover {
+    background: #1fb457;
+}
+
+.secondary {
+    background: var(--panel-strong);
+    border: 1px solid var(--line);
+}
+
+.secondary:hover {
+    background: #263755;
+}
+
+.result, .order-card {
+    margin-top: 14px;
     background: #0f172a;
-    padding: 10px;
-    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 8px;
+    padding: 12px;
+}
+
+.result p, .order-card p {
+    margin: 8px 0;
+}
+
+.muted {
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.code {
+    color: var(--yellow);
+    font-weight: 800;
+    letter-spacing: 0.04em;
+}
+
+.status {
+    min-height: 20px;
+    color: var(--muted);
+    font-size: 13px;
+    margin-top: 10px;
+}
+
+ul {
+    margin: 10px 0 0;
+    padding-left: 20px;
+}
+
+li {
+    margin-bottom: 6px;
+}
+
+.hidden {
+    display: none;
+}
+
+@media (max-width: 900px) {
+    .main {
+        grid-template-columns: 1fr;
+    }
 }
 </style>
-
 </head>
 <body>
+<main class="page">
+    <div class="main">
+        <section class="panel">
+            <h1>Cambio USD a ARS</h1>
 
-<div class="main">
+            <label class="label" for="usd">Monto en USD</label>
+            <input type="number" id="usd" placeholder="Ingrese USD" min="1" step="0.01">
 
-<!-- 🔹 CALCULADORA -->
-<div class="container">
-<h1>💱 Cambio USD → ARS</h1>
+            <button onclick="calcular()">Calcular</button>
 
-<input type="number" id="usd" placeholder="Ingrese USD">
+            <div class="result">
+                <p id="tipo">Tipo: ...</p>
+                <p id="recibes">Recibes: -</p>
+                <p id="comision">Comision: -</p>
+            </div>
 
-<button onclick="calcular()">Calcular</button>
+            <button class="whatsapp" id="whatsappBtn" onclick="irWhatsApp()">Realizar cambio</button>
+            <p class="status" id="estadoOrden"></p>
+        </section>
 
-<div class="result">
-    <p id="tipo">Tipo: ...</p>
-    <p id="recibes">Recibes: -</p>
-    <p id="comision">Comisión: -</p>
-</div>
+        <section class="panel">
+            <h3>Historial</h3>
+            <p class="muted">Actualiza cada 1 minuto</p>
+            <ul id="lista"></ul>
+        </section>
 
-<button class="whatsapp" onclick="irWhatsApp()">Realizar cambio</button>
+        <section class="panel">
+            <h2>Buscar orden</h2>
+            <p class="muted">Pegue el codigo recibido por WhatsApp para verificar los datos guardados.</p>
 
-</div>
+            <label class="label" for="codigoOrden">Codigo de orden</label>
+            <input type="text" id="codigoOrden" placeholder="Ej: CJ-A1B2C3" autocomplete="off">
 
-<!-- 🔹 HISTORIAL -->
-<div class="historial">
-<h3>📊 Historial</h3>
-<p style="font-size:12px;">Actualiza cada 1 minuto</p>
+            <button class="secondary" onclick="buscarOrden()">Buscar</button>
+            <p class="status" id="estadoBusqueda"></p>
 
-<ul id="lista"></ul>
-
-</div>
-
-</div>
+            <div class="order-card hidden" id="datosOrden">
+                <p>Codigo: <span class="code" id="ordenCodigo"></span></p>
+                <p>Monto: <strong id="ordenMonto"></strong></p>
+                <p>Tipo de cambio: <strong id="ordenTipo"></strong></p>
+                <p>Comision: <strong id="ordenComision"></strong></p>
+                <p>Total a cambiar: <strong id="ordenTotal"></strong></p>
+                <p>Estado: <strong id="ordenEstado"></strong></p>
+                <p class="muted" id="ordenFecha"></p>
+            </div>
+        </section>
+    </div>
+</main>
 
 <script>
+const API_URL = "https://cambiosjanka.onrender.com";
+const WHATSAPP_NUMERO = "5491162121656";
+const COMISION_PORCENTAJE = 2.5;
 
 let tipoFinalGlobal = 0;
-
-// 🔥 CARGAR historial guardado
+let ultimaOrden = null;
 let historial = JSON.parse(localStorage.getItem("historial")) || [];
 
-// 🔹 Obtener precio
+function formatoNumero(valor, decimales = 2) {
+    return Number(valor).toLocaleString("es-AR", {
+        minimumFractionDigits: decimales,
+        maximumFractionDigits: decimales
+    });
+}
+
+function obtenerMontoUsd() {
+    return Number(document.getElementById("usd").value);
+}
+
 async function obtenerPrecioFinal() {
     try {
-        const res = await fetch("https://cambiosjanka.onrender.com/precio");
+        const res = await fetch(`${API_URL}/precio`);
         const data = await res.json();
 
-        tipoFinalGlobal = data.tipo;
+        if (!res.ok || data.error) {
+            throw new Error(data.error || "No se pudo obtener el precio");
+        }
+
+        tipoFinalGlobal = Number(data.tipo);
 
         document.getElementById("tipo").innerText =
-            "💱 Tipo: " + tipoFinalGlobal.toFixed(2);
+            `Tipo: ${formatoNumero(tipoFinalGlobal)} ARS`;
 
-        // 🔹 Guardar historial (máx 10)
         historial.unshift(tipoFinalGlobal.toFixed(2));
         if (historial.length > 10) historial.pop();
 
-        // 🔥 GUARDAR en localStorage
         localStorage.setItem("historial", JSON.stringify(historial));
-
         actualizarHistorial();
-
     } catch (e) {
+        document.getElementById("tipo").innerText = "Tipo: error";
         console.error(e);
     }
 }
 
-// 🔹 Mostrar historial
 function actualizarHistorial() {
     const lista = document.getElementById("lista");
     lista.innerHTML = "";
 
-    historial.forEach(p => {
+    historial.forEach(precio => {
         const li = document.createElement("li");
-        li.innerText = p;
+        li.innerText = `${formatoNumero(precio)} ARS`;
         lista.appendChild(li);
     });
 }
 
-// 🔹 Calcular
 function calcular() {
-    const usd = parseFloat(document.getElementById("usd").value);
+    const usd = obtenerMontoUsd();
 
-    const comision = usd * 0.025;
+    if (!usd || usd <= 0 || !tipoFinalGlobal) {
+        document.getElementById("estadoOrden").innerText = "Ingrese un monto valido y espere la cotizacion.";
+        return;
+    }
+
+    const comision = usd * (COMISION_PORCENTAJE / 100);
     const ars = usd * tipoFinalGlobal;
 
     document.getElementById("recibes").innerText =
-        "💰 Recibes: " + ars.toFixed(2) + " ARS";
+        `Recibes: ${formatoNumero(ars)} ARS`;
 
     document.getElementById("comision").innerText =
-        "🧾 Comisión: " + comision.toFixed(2) + " USD";
+        `Comision (${COMISION_PORCENTAJE}%): ${formatoNumero(comision)} USD`;
+
+    document.getElementById("estadoOrden").innerText = "";
 }
 
-// 🔹 WhatsApp
-function irWhatsApp() {
-    const usd = document.getElementById("usd").value;
+async function irWhatsApp() {
+    const usd = obtenerMontoUsd();
+    const boton = document.getElementById("whatsappBtn");
+    const estado = document.getElementById("estadoOrden");
 
-    const comision = (usd * 0.025).toFixed(2);
+    if (!usd || usd <= 0) {
+        estado.innerText = "Ingrese un monto valido.";
+        return;
+    }
 
-    const mensaje = `Monto a cambiar: ${usd} USD
-Dólar a: ${tipoFinalGlobal.toFixed(2)}
-Comisión: ${comision} USD`;
+    boton.disabled = true;
+    estado.innerText = "Creando orden...";
 
-    const url = "https://wa.me/5491162121656?text=" + encodeURIComponent(mensaje);
+    try {
+        const res = await fetch(`${API_URL}/cotizacion`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ monto_usd: usd })
+        });
+        const orden = await res.json();
 
-    window.open(url, "_blank");
+        if (!res.ok || orden.error) {
+            throw new Error(orden.error || "No se pudo crear la orden");
+        }
+
+        ultimaOrden = orden;
+        estado.innerHTML = `Orden creada: <span class="code">${orden.codigo}</span>`;
+
+        const mensaje = `Hola, quiero realizar un cambio.
+
+Codigo de orden: ${orden.codigo}
+Monto a cambiar: ${formatoNumero(orden.monto_usd)} USD
+Tipo de cambio: ${formatoNumero(orden.tipo_cambio)} ARS
+Comision: ${formatoNumero(orden.comision_usd)} USD (${orden.comision_porcentaje}%)
+Total a cambiar: ${formatoNumero(orden.total_ars)} ARS
+Estado: ${orden.estado}`;
+
+        const url = `https://wa.me/${WHATSAPP_NUMERO}?text=${encodeURIComponent(mensaje)}`;
+        window.open(url, "_blank");
+    } catch (e) {
+        estado.innerText = e.message;
+        console.error(e);
+    } finally {
+        boton.disabled = false;
+    }
 }
 
-// 🔹 Mostrar historial al iniciar
+async function buscarOrden() {
+    const codigo = document.getElementById("codigoOrden").value.trim().toUpperCase();
+    const estado = document.getElementById("estadoBusqueda");
+    const card = document.getElementById("datosOrden");
+
+    if (!codigo) {
+        estado.innerText = "Ingrese un codigo.";
+        card.classList.add("hidden");
+        return;
+    }
+
+    estado.innerText = "Buscando orden...";
+    card.classList.add("hidden");
+
+    try {
+        const res = await fetch(`${API_URL}/cotizacion/${encodeURIComponent(codigo)}`);
+        const orden = await res.json();
+
+        if (!res.ok || orden.error) {
+            throw new Error(orden.error || "No se encontro la orden");
+        }
+
+        document.getElementById("ordenCodigo").innerText = orden.codigo;
+        document.getElementById("ordenMonto").innerText = `${formatoNumero(orden.monto_usd)} USD`;
+        document.getElementById("ordenTipo").innerText = `${formatoNumero(orden.tipo_cambio)} ARS`;
+        document.getElementById("ordenComision").innerText =
+            `${formatoNumero(orden.comision_usd)} USD (${orden.comision_porcentaje}%)`;
+        document.getElementById("ordenTotal").innerText = `${formatoNumero(orden.total_ars)} ARS`;
+        document.getElementById("ordenEstado").innerText = orden.estado;
+        document.getElementById("ordenFecha").innerText =
+            `Creada: ${new Date(orden.created_at).toLocaleString("es-AR")}`;
+
+        estado.innerText = "";
+        card.classList.remove("hidden");
+    } catch (e) {
+        estado.innerText = e.message;
+        console.error(e);
+    }
+}
+
 actualizarHistorial();
-
-// 🔹 Actualizar cada 1 minuto
 setInterval(obtenerPrecioFinal, 60000);
 obtenerPrecioFinal();
-
 </script>
-
 </body>
 </html>
