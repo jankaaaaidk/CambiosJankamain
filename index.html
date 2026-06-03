@@ -339,6 +339,16 @@ li {
     left: 50px;
 }
 
+.client-animal.walking .pig .leg.one,
+.client-animal.walking .wolf .leg.one {
+    animation: stepOne 0.34s steps(2, end) infinite;
+}
+
+.client-animal.walking .pig .leg.two,
+.client-animal.walking .wolf .leg.two {
+    animation: stepTwo 0.34s steps(2, end) infinite;
+}
+
 .pig .tail {
     right: 0;
     bottom: 36px;
@@ -427,6 +437,24 @@ li {
     transform: translateX(-50%);
     background: rgba(0, 0, 0, 0.28);
     border-radius: 999px;
+}
+
+@keyframes stepOne {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-5px);
+    }
+}
+
+@keyframes stepTwo {
+    0%, 100% {
+        transform: translateY(-5px);
+    }
+    50% {
+        transform: translateY(0);
+    }
 }
 
 @media (max-width: 900px) {
@@ -715,6 +743,7 @@ function moverAnimalCorral(animalBox) {
 
     animalBox.style.right = "auto";
     animalBox.style.transitionDuration = `${duration}s`;
+    animalBox.classList.add("walking");
     animalBox.style.left = `${nextLeft}px`;
 
     // Los animales estan dibujados mirando a la izquierda por defecto.
@@ -723,7 +752,14 @@ function moverAnimalCorral(animalBox) {
             ? "translateX(-50%) scaleX(-1)"
             : "translateX(-50%) scaleX(1)";
 
-    const nextDelay = (duration + numeroAleatorio(1.2, 4.8)) * 1000;
+    window.setTimeout(() => {
+        animalBox.classList.remove("walking");
+    }, duration * 1000);
+
+    const quietTime = Math.random() < 0.42
+        ? numeroAleatorio(4.5, 6.5)
+        : numeroAleatorio(1.1, 3.4);
+    const nextDelay = (duration + quietTime) * 1000;
     window.setTimeout(() => moverAnimalCorral(animalBox), nextDelay);
 }
 
