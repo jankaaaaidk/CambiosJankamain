@@ -340,12 +340,14 @@ li {
 }
 
 .client-animal.walking .pig .leg.one,
-.client-animal.walking .wolf .leg.one {
+.client-animal.walking .wolf .leg.one,
+.client-animal.walking .duck .leg.one {
     animation: stepOne 0.34s steps(2, end) infinite;
 }
 
 .client-animal.walking .pig .leg.two,
-.client-animal.walking .wolf .leg.two {
+.client-animal.walking .wolf .leg.two,
+.client-animal.walking .duck .leg.two {
     animation: stepTwo 0.34s steps(2, end) infinite;
 }
 
@@ -426,6 +428,65 @@ li {
     width: 18px;
     height: 12px;
     background: #707b8e;
+}
+
+.duck .body {
+    left: 18px;
+    bottom: 12px;
+    width: 48px;
+    height: 30px;
+    background: #f4d35e;
+}
+
+.duck .head {
+    left: 2px;
+    bottom: 32px;
+    width: 32px;
+    height: 30px;
+    background: #ffe07a;
+}
+
+.duck .snout {
+    left: -10px;
+    bottom: 38px;
+    width: 18px;
+    height: 10px;
+    background: #f59e0b;
+}
+
+.duck .ear {
+    display: none;
+}
+
+.duck .eye {
+    left: 24px;
+    bottom: 46px;
+    width: 5px;
+    height: 5px;
+    background: #111827;
+}
+
+.duck .leg {
+    bottom: 0;
+    width: 10px;
+    height: 14px;
+    background: #f97316;
+}
+
+.duck .leg.one {
+    left: 30px;
+}
+
+.duck .leg.two {
+    left: 52px;
+}
+
+.duck .tail {
+    right: 0;
+    bottom: 31px;
+    width: 14px;
+    height: 12px;
+    background: #eab308;
 }
 
 .shadow {
@@ -561,6 +622,22 @@ li {
             <div class="client-animal">
                 <div class="name-tag">kyana</div>
                 <div class="animal pig" aria-label="Puerco de kyana">
+                    <div class="shadow"></div>
+                    <div class="tail"></div>
+                    <div class="body"></div>
+                    <div class="head"></div>
+                    <div class="snout"></div>
+                    <div class="ear left"></div>
+                    <div class="ear right"></div>
+                    <div class="eye"></div>
+                    <div class="leg one"></div>
+                    <div class="leg two"></div>
+                </div>
+            </div>
+
+            <div class="client-animal">
+                <div class="name-tag">jostinlin</div>
+                <div class="animal duck" aria-label="Pato de jostinlin">
                     <div class="shadow"></div>
                     <div class="tail"></div>
                     <div class="body"></div>
