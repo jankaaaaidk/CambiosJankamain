@@ -557,6 +557,22 @@ li {
                     <div class="leg two"></div>
                 </div>
             </div>
+
+            <div class="client-animal">
+                <div class="name-tag">kyana</div>
+                <div class="animal pig" aria-label="Puerco de kyana">
+                    <div class="shadow"></div>
+                    <div class="tail"></div>
+                    <div class="body"></div>
+                    <div class="head"></div>
+                    <div class="snout"></div>
+                    <div class="ear left"></div>
+                    <div class="ear right"></div>
+                    <div class="eye"></div>
+                    <div class="leg one"></div>
+                    <div class="leg two"></div>
+                </div>
+            </div>
         </div>
     </section>
 </main>
@@ -772,7 +788,8 @@ function iniciarCorralito() {
 
         const penWidth = pen.clientWidth;
         const boxWidth = animalBox.offsetWidth;
-        const basePosition = index === 0 ? penWidth * 0.18 : penWidth * 0.68;
+        const spacing = penWidth / (animales.length + 1);
+        const basePosition = spacing * (index + 1) - (boxWidth / 2);
 
         animalBox.style.right = "auto";
         animalBox.style.left = `${Math.min(basePosition, penWidth - boxWidth - 8)}px`;
