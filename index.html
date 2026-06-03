@@ -225,18 +225,16 @@ li {
     width: 130px;
     height: 118px;
     transform-origin: center bottom;
-    animation: wander 8s ease-in-out infinite;
+    transition-property: left;
+    transition-timing-function: ease-in-out;
 }
 
 .client-animal:nth-child(2) {
     left: 12%;
-    animation-duration: 9.5s;
 }
 
 .client-animal:nth-child(3) {
     right: 16%;
-    animation-name: wanderReverse;
-    animation-duration: 11s;
 }
 
 .name-tag {
@@ -265,14 +263,6 @@ li {
     height: 64px;
     transform: translateX(-50%);
     image-rendering: pixelated;
-}
-
-.client-animal:nth-child(2) .animal {
-    animation: lookRightLeft 9.5s ease-in-out infinite;
-}
-
-.client-animal:nth-child(3) .animal {
-    animation: lookLeftRight 11s ease-in-out infinite;
 }
 
 .animal .body,
@@ -437,54 +427,6 @@ li {
     transform: translateX(-50%);
     background: rgba(0, 0, 0, 0.28);
     border-radius: 999px;
-}
-
-@keyframes wander {
-    0%, 26% {
-        transform: translateX(0);
-    }
-    38%, 55% {
-        transform: translateX(42px);
-    }
-    66% {
-        transform: translateX(42px);
-    }
-    82%, 100% {
-        transform: translateX(-18px);
-    }
-}
-
-@keyframes wanderReverse {
-    0%, 30% {
-        transform: translateX(0);
-    }
-    45%, 62% {
-        transform: translateX(-52px);
-    }
-    73% {
-        transform: translateX(-52px);
-    }
-    88%, 100% {
-        transform: translateX(16px);
-    }
-}
-
-@keyframes lookRightLeft {
-    0%, 55% {
-        transform: translateX(-50%) scaleX(-1);
-    }
-    66%, 100% {
-        transform: translateX(-50%) scaleX(1);
-    }
-}
-
-@keyframes lookLeftRight {
-    0%, 62% {
-        transform: translateX(-50%) scaleX(1);
-    }
-    73%, 100% {
-        transform: translateX(-50%) scaleX(-1);
-    }
 }
 
 @media (max-width: 900px) {
@@ -754,9 +696,62 @@ async function buscarOrden() {
     }
 }
 
+function numeroAleatorio(min, max) {
+    return Math.random() * (max - min) + min;
+}
+
+function moverAnimalCorral(animalBox) {
+    const pen = animalBox.closest(".pen");
+    const animal = animalBox.querySelector(".animal");
+
+    if (!pen || !animal) return;
+
+    const penWidth = pen.clientWidth;
+    const boxWidth = animalBox.offsetWidth;
+    const maxLeft = Math.max(0, penWidth - boxWidth - 16);
+    const currentLeft = Number.parseFloat(animalBox.style.left || animalBox.offsetLeft || 0);
+    const nextLeft = numeroAleatorio(8, maxLeft);
+    const duration = numeroAleatorio(2.8, 6.5);
+
+    animalBox.style.right = "auto";
+    animalBox.style.transitionDuration = `${duration}s`;
+    animalBox.style.left = `${nextLeft}px`;
+
+    // Los animales estan dibujados mirando a la izquierda por defecto.
+    animal.style.transform =
+        nextLeft > currentLeft
+            ? "translateX(-50%) scaleX(-1)"
+            : "translateX(-50%) scaleX(1)";
+
+    const nextDelay = (duration + numeroAleatorio(1.2, 4.8)) * 1000;
+    window.setTimeout(() => moverAnimalCorral(animalBox), nextDelay);
+}
+
+function iniciarCorralito() {
+    const animales = document.querySelectorAll(".client-animal");
+
+    animales.forEach((animalBox, index) => {
+        const pen = animalBox.closest(".pen");
+        if (!pen) return;
+
+        const penWidth = pen.clientWidth;
+        const boxWidth = animalBox.offsetWidth;
+        const basePosition = index === 0 ? penWidth * 0.18 : penWidth * 0.68;
+
+        animalBox.style.right = "auto";
+        animalBox.style.left = `${Math.min(basePosition, penWidth - boxWidth - 8)}px`;
+
+        window.setTimeout(
+            () => moverAnimalCorral(animalBox),
+            numeroAleatorio(500, 2200)
+        );
+    });
+}
+
 actualizarHistorial();
 setInterval(obtenerPrecioFinal, 60000);
 obtenerPrecioFinal();
+iniciarCorralito();
 </script>
 </body>
 </html>
