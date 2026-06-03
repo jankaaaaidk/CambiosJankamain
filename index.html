@@ -267,6 +267,14 @@ li {
     image-rendering: pixelated;
 }
 
+.client-animal:nth-child(2) .animal {
+    animation: lookRightLeft 9.5s ease-in-out infinite;
+}
+
+.client-animal:nth-child(3) .animal {
+    animation: lookLeftRight 11s ease-in-out infinite;
+}
+
 .animal .body,
 .animal .head,
 .animal .leg,
@@ -433,31 +441,49 @@ li {
 
 @keyframes wander {
     0%, 26% {
-        transform: translateX(0) scaleX(1);
+        transform: translateX(0);
     }
     38%, 55% {
-        transform: translateX(42px) scaleX(1);
+        transform: translateX(42px);
     }
     66% {
-        transform: translateX(42px) scaleX(-1);
+        transform: translateX(42px);
     }
     82%, 100% {
-        transform: translateX(-18px) scaleX(-1);
+        transform: translateX(-18px);
     }
 }
 
 @keyframes wanderReverse {
     0%, 30% {
-        transform: translateX(0) scaleX(-1);
+        transform: translateX(0);
     }
     45%, 62% {
-        transform: translateX(-52px) scaleX(-1);
+        transform: translateX(-52px);
     }
     73% {
-        transform: translateX(-52px) scaleX(1);
+        transform: translateX(-52px);
     }
     88%, 100% {
-        transform: translateX(16px) scaleX(1);
+        transform: translateX(16px);
+    }
+}
+
+@keyframes lookRightLeft {
+    0%, 55% {
+        transform: translateX(-50%) scaleX(1);
+    }
+    66%, 100% {
+        transform: translateX(-50%) scaleX(-1);
+    }
+}
+
+@keyframes lookLeftRight {
+    0%, 62% {
+        transform: translateX(-50%) scaleX(-1);
+    }
+    73%, 100% {
+        transform: translateX(-50%) scaleX(1);
     }
 }
 
