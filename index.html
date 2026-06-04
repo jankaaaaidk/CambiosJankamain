@@ -265,6 +265,150 @@ li {
     bottom: 30px;
 }
 
+.hotbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 14px;
+    padding: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    background: #0f172a;
+}
+
+.food-button {
+    display: grid;
+    grid-template-columns: 34px 1fr;
+    align-items: center;
+    gap: 8px;
+    width: auto;
+    min-width: 136px;
+    min-height: 44px;
+    margin: 0;
+    padding: 8px 10px;
+    border: 1px solid var(--line);
+    background: var(--panel-strong);
+    color: var(--text);
+    text-align: left;
+    touch-action: none;
+    user-select: none;
+}
+
+.food-button:hover {
+    background: #263755;
+}
+
+.food-button small {
+    display: block;
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 400;
+}
+
+.food-icon {
+    position: relative;
+    width: 28px;
+    height: 28px;
+    image-rendering: pixelated;
+}
+
+.food-icon.carrot::before {
+    content: "";
+    position: absolute;
+    left: 8px;
+    top: 8px;
+    width: 11px;
+    height: 18px;
+    background: #f97316;
+    box-shadow:
+        4px 0 0 #ea580c,
+        0 8px 0 #fb923c;
+    transform: rotate(28deg);
+}
+
+.food-icon.carrot::after {
+    content: "";
+    position: absolute;
+    left: 8px;
+    top: 0;
+    width: 7px;
+    height: 12px;
+    background: #22c55e;
+    box-shadow: 7px 3px 0 #16a34a;
+    transform: rotate(-18deg);
+}
+
+.food-icon.seeds::before {
+    content: "";
+    position: absolute;
+    left: 4px;
+    top: 7px;
+    width: 6px;
+    height: 6px;
+    background: #facc15;
+    box-shadow:
+        10px -2px 0 #fde68a,
+        17px 4px 0 #eab308,
+        6px 13px 0 #fbbf24,
+        19px 16px 0 #facc15;
+}
+
+.food-icon.bone::before {
+    content: "";
+    position: absolute;
+    left: 5px;
+    top: 12px;
+    width: 18px;
+    height: 7px;
+    background: #e5e7eb;
+}
+
+.food-icon.bone::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 7px;
+    width: 9px;
+    height: 9px;
+    background: #f8fafc;
+    box-shadow:
+        0 9px 0 #f8fafc,
+        20px 0 0 #f8fafc,
+        20px 9px 0 #f8fafc;
+}
+
+.drag-food,
+.dropped-food {
+    position: fixed;
+    z-index: 30;
+    width: 34px;
+    height: 34px;
+    pointer-events: none;
+    filter: drop-shadow(0 8px 0 rgba(0, 0, 0, 0.28));
+}
+
+.dropped-food {
+    position: absolute;
+    z-index: 2;
+}
+
+.dropped-food.eaten {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.7);
+    transition: opacity 0.22s ease, transform 0.22s ease;
+}
+
+.particle {
+    position: absolute;
+    z-index: 4;
+    width: 7px;
+    height: 7px;
+    border-radius: 2px;
+    background: #fef3c7;
+    pointer-events: none;
+    animation: particlePop 0.72s ease-out forwards;
+}
+
 .client-animal {
     position: absolute;
     bottom: 48px;
@@ -591,6 +735,17 @@ li {
     }
 }
 
+@keyframes particlePop {
+    0% {
+        opacity: 1;
+        transform: translate(0, 0) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(var(--dx), var(--dy)) scale(0);
+    }
+}
+
 @media (prefers-reduced-motion: reduce) {
     .wave-text span,
     .loading-dots span,
@@ -675,8 +830,23 @@ li {
         <h2>Corralito</h2>
         <p class="muted">Clientes del rancho, haciendo lo suyo.</p>
 
+        <div class="hotbar" aria-label="Comidas para el corralito">
+            <button class="food-button" type="button" data-food="carrot" data-target="pig">
+                <span class="food-icon carrot" aria-hidden="true"></span>
+                <span>Zanahoria <small>para puercos</small></span>
+            </button>
+            <button class="food-button" type="button" data-food="seeds" data-target="duck">
+                <span class="food-icon seeds" aria-hidden="true"></span>
+                <span>Semillas <small>para patos</small></span>
+            </button>
+            <button class="food-button" type="button" data-food="bone" data-target="wolf">
+                <span class="food-icon bone" aria-hidden="true"></span>
+                <span>Hueso <small>para lobos</small></span>
+            </button>
+        </div>
+
         <div class="pen" aria-label="Corralito pixel art de clientes">
-            <div class="client-animal">
+            <div class="client-animal" data-animal="pig">
                 <div class="name-tag">kim</div>
                 <div class="animal pig" aria-label="Puerco de kim">
                     <div class="shadow"></div>
@@ -692,7 +862,7 @@ li {
                 </div>
             </div>
 
-            <div class="client-animal">
+            <div class="client-animal" data-animal="wolf">
                 <div class="name-tag">jostin</div>
                 <div class="animal wolf" aria-label="Lobo de jostin">
                     <div class="shadow"></div>
@@ -708,7 +878,7 @@ li {
                 </div>
             </div>
 
-            <div class="client-animal">
+            <div class="client-animal" data-animal="pig">
                 <div class="name-tag">kyana</div>
                 <div class="animal pig" aria-label="Puerco de kyana">
                     <div class="shadow"></div>
@@ -724,7 +894,7 @@ li {
                 </div>
             </div>
 
-            <div class="client-animal">
+            <div class="client-animal" data-animal="duck">
                 <div class="name-tag">jostinlin</div>
                 <div class="animal duck" aria-label="Pato de jostinlin">
                     <div class="shadow"></div>
@@ -763,6 +933,7 @@ let ultimaOrden = null;
 let historial = JSON.parse(localStorage.getItem("historial")) || [];
 let fraseCargaIndex = 0;
 let intervaloFrasesCarga = null;
+let comidaArrastrada = null;
 
 function formatoNumero(valor, decimales = 2) {
     return Number(valor).toLocaleString("es-AR", {
@@ -969,16 +1140,35 @@ function numeroAleatorio(min, max) {
     return Math.random() * (max - min) + min;
 }
 
+function apuntarAnimal(animalBox, nextLeft) {
+    const animal = animalBox.querySelector(".animal");
+    if (!animal) return;
+
+    const currentLeft = Number.parseFloat(animalBox.style.left || animalBox.offsetLeft || 0);
+
+    // Los animales estan dibujados mirando a la izquierda por defecto.
+    animal.style.transform =
+        nextLeft > currentLeft
+            ? "translateX(-50%) scaleX(-1)"
+            : "translateX(-50%) scaleX(1)";
+}
+
+function programarMovimientoRandom(animalBox, delay) {
+    window.clearTimeout(Number(animalBox.dataset.moveTimer || 0));
+    animalBox.dataset.moveTimer = window.setTimeout(
+        () => moverAnimalCorral(animalBox),
+        delay
+    );
+}
+
 function moverAnimalCorral(animalBox) {
     const pen = animalBox.closest(".pen");
-    const animal = animalBox.querySelector(".animal");
 
-    if (!pen || !animal) return;
+    if (!pen || animalBox.dataset.busy === "true") return;
 
     const penWidth = pen.clientWidth;
     const boxWidth = animalBox.offsetWidth;
     const maxLeft = Math.max(0, penWidth - boxWidth - 16);
-    const currentLeft = Number.parseFloat(animalBox.style.left || animalBox.offsetLeft || 0);
     const nextLeft = numeroAleatorio(8, maxLeft);
     const duration = numeroAleatorio(2.8, 6.5);
 
@@ -986,12 +1176,7 @@ function moverAnimalCorral(animalBox) {
     animalBox.style.transitionDuration = `${duration}s`;
     animalBox.classList.add("walking");
     animalBox.style.left = `${nextLeft}px`;
-
-    // Los animales estan dibujados mirando a la izquierda por defecto.
-    animal.style.transform =
-        nextLeft > currentLeft
-            ? "translateX(-50%) scaleX(-1)"
-            : "translateX(-50%) scaleX(1)";
+    apuntarAnimal(animalBox, nextLeft);
 
     window.setTimeout(() => {
         animalBox.classList.remove("walking");
@@ -1001,7 +1186,7 @@ function moverAnimalCorral(animalBox) {
         ? numeroAleatorio(4.5, 6.5)
         : numeroAleatorio(1.1, 3.4);
     const nextDelay = (duration + quietTime) * 1000;
-    window.setTimeout(() => moverAnimalCorral(animalBox), nextDelay);
+    programarMovimientoRandom(animalBox, nextDelay);
 }
 
 function iniciarCorralito() {
@@ -1019,10 +1204,145 @@ function iniciarCorralito() {
         animalBox.style.right = "auto";
         animalBox.style.left = `${Math.min(basePosition, penWidth - boxWidth - 8)}px`;
 
-        window.setTimeout(
-            () => moverAnimalCorral(animalBox),
-            numeroAleatorio(500, 2200)
+        programarMovimientoRandom(animalBox, numeroAleatorio(500, 2200));
+    });
+}
+
+function crearIconoComida(tipo, extraClass = "") {
+    const food = document.createElement("div");
+    food.className = `${extraClass} food-icon ${tipo}`.trim();
+    food.dataset.food = tipo;
+    return food;
+}
+
+function iniciarArrastreComida(event) {
+    const boton = event.currentTarget;
+    const tipo = boton.dataset.food;
+    const target = boton.dataset.target;
+
+    comidaArrastrada = crearIconoComida(tipo, "drag-food");
+    comidaArrastrada.dataset.target = target;
+    document.body.appendChild(comidaArrastrada);
+    moverFantasmaComida(event.clientX, event.clientY);
+
+    window.addEventListener("pointermove", moverArrastreComida);
+    window.addEventListener("pointerup", soltarComida, { once: true });
+}
+
+function moverFantasmaComida(x, y) {
+    if (!comidaArrastrada) return;
+
+    comidaArrastrada.style.left = `${x - 17}px`;
+    comidaArrastrada.style.top = `${y - 17}px`;
+}
+
+function moverArrastreComida(event) {
+    moverFantasmaComida(event.clientX, event.clientY);
+}
+
+function soltarComida(event) {
+    window.removeEventListener("pointermove", moverArrastreComida);
+
+    if (!comidaArrastrada) return;
+
+    const pen = document.querySelector(".pen");
+    const penRect = pen.getBoundingClientRect();
+    const insidePen =
+        event.clientX >= penRect.left &&
+        event.clientX <= penRect.right &&
+        event.clientY >= penRect.top &&
+        event.clientY <= penRect.bottom;
+
+    if (insidePen) {
+        crearComidaEnCorral(
+            comidaArrastrada.dataset.food,
+            comidaArrastrada.dataset.target,
+            event.clientX - penRect.left,
+            event.clientY - penRect.top
         );
+    }
+
+    comidaArrastrada.remove();
+    comidaArrastrada = null;
+}
+
+function crearComidaEnCorral(tipo, target, x, y) {
+    const pen = document.querySelector(".pen");
+    const comida = crearIconoComida(tipo, "dropped-food");
+    const safeX = Math.max(18, Math.min(x, pen.clientWidth - 18));
+    const safeY = Math.max(46, Math.min(y, pen.clientHeight - 44));
+
+    comida.dataset.target = target;
+    comida.style.left = `${safeX - 17}px`;
+    comida.style.top = `${safeY - 17}px`;
+    pen.appendChild(comida);
+
+    atraerAnimalesAComida(comida, target, safeX);
+}
+
+function atraerAnimalesAComida(comida, target, foodX) {
+    const pen = comida.closest(".pen");
+    const animales = [...pen.querySelectorAll(`.client-animal[data-animal="${target}"]`)];
+
+    animales.forEach((animalBox) => {
+        const boxWidth = animalBox.offsetWidth;
+        const nextLeft = Math.max(8, Math.min(foodX - boxWidth / 2, pen.clientWidth - boxWidth - 8));
+        const currentLeft = Number.parseFloat(animalBox.style.left || animalBox.offsetLeft || 0);
+        const distance = Math.abs(nextLeft - currentLeft);
+        const duration = Math.max(0.7, Math.min(3.8, distance / 140));
+
+        window.clearTimeout(Number(animalBox.dataset.moveTimer || 0));
+        animalBox.dataset.busy = "true";
+        animalBox.style.right = "auto";
+        animalBox.style.transitionDuration = `${duration}s`;
+        animalBox.classList.add("walking");
+        apuntarAnimal(animalBox, nextLeft);
+        animalBox.style.left = `${nextLeft}px`;
+
+        window.setTimeout(() => {
+            animalBox.classList.remove("walking");
+
+            if (comida.isConnected && !comida.classList.contains("eaten")) {
+                comerComida(comida);
+            }
+
+            animalBox.dataset.busy = "false";
+            programarMovimientoRandom(animalBox, numeroAleatorio(900, 2600));
+        }, duration * 1000);
+    });
+}
+
+function comerComida(comida) {
+    const pen = comida.closest(".pen");
+    const x = comida.offsetLeft + 17;
+    const y = comida.offsetTop + 17;
+
+    comida.classList.add("eaten");
+    crearParticulas(pen, x, y);
+    window.setTimeout(() => comida.remove(), 260);
+}
+
+function crearParticulas(pen, x, y) {
+    for (let i = 0; i < 16; i += 1) {
+        const particle = document.createElement("span");
+        const angle = numeroAleatorio(0, Math.PI * 2);
+        const distance = numeroAleatorio(18, 52);
+
+        particle.className = "particle";
+        particle.style.left = `${x}px`;
+        particle.style.top = `${y}px`;
+        particle.style.background = i % 3 === 0 ? "#fef3c7" : i % 3 === 1 ? "#86efac" : "#f9a8d4";
+        particle.style.setProperty("--dx", `${Math.cos(angle) * distance}px`);
+        particle.style.setProperty("--dy", `${Math.sin(angle) * distance - 22}px`);
+        pen.appendChild(particle);
+
+        window.setTimeout(() => particle.remove(), 760);
+    }
+}
+
+function iniciarHotbarComida() {
+    document.querySelectorAll(".food-button").forEach((button) => {
+        button.addEventListener("pointerdown", iniciarArrastreComida);
     });
 }
 
@@ -1031,6 +1351,7 @@ iniciarMensajesCarga();
 setInterval(obtenerPrecioFinal, 60000);
 obtenerPrecioFinal();
 iniciarCorralito();
+iniciarHotbarComida();
 </script>
 </body>
 </html>
