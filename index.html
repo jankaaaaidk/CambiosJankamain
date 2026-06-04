@@ -457,6 +457,32 @@ li {
         20px 9px 0 #f8fafc;
 }
 
+.food-icon.berries::before {
+    content: "";
+    position: absolute;
+    left: 6px;
+    top: 8px;
+    width: 7px;
+    height: 7px;
+    background: #ef4444;
+    box-shadow:
+        9px -3px 0 #dc2626,
+        16px 5px 0 #f87171,
+        5px 13px 0 #b91c1c,
+        15px 15px 0 #ef4444;
+}
+
+.food-icon.berries::after {
+    content: "";
+    position: absolute;
+    left: 10px;
+    top: 1px;
+    width: 8px;
+    height: 8px;
+    background: #22c55e;
+    box-shadow: 8px 3px 0 #16a34a;
+}
+
 .drag-food,
 .dropped-food {
     position: fixed;
@@ -648,13 +674,15 @@ li {
 
 .client-animal.walking .pig .leg.one,
 .client-animal.walking .wolf .leg.one,
-.client-animal.walking .duck .leg.one {
+.client-animal.walking .duck .leg.one,
+.client-animal.walking .fox .leg.one {
     animation: stepOne 0.34s steps(2, end) infinite;
 }
 
 .client-animal.walking .pig .leg.two,
 .client-animal.walking .wolf .leg.two,
-.client-animal.walking .duck .leg.two {
+.client-animal.walking .duck .leg.two,
+.client-animal.walking .fox .leg.two {
     animation: stepTwo 0.34s steps(2, end) infinite;
 }
 
@@ -799,6 +827,83 @@ li {
     width: 14px;
     height: 12px;
     background: #eab308;
+}
+
+.fox .body {
+    left: 18px;
+    bottom: 13px;
+    width: 48px;
+    height: 31px;
+    background: #dc581f;
+}
+
+.fox .head {
+    left: 1px;
+    bottom: 30px;
+    width: 34px;
+    height: 29px;
+    background: #f97316;
+}
+
+.fox .snout {
+    left: -7px;
+    bottom: 34px;
+    width: 15px;
+    height: 10px;
+    background: #fef3c7;
+}
+
+.fox .ear {
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 18px solid #b45309;
+    background: transparent;
+    box-shadow: none;
+}
+
+.fox .ear.left {
+    left: 4px;
+    bottom: 54px;
+}
+
+.fox .ear.right {
+    left: 23px;
+    bottom: 54px;
+}
+
+.fox .eye {
+    left: 23px;
+    bottom: 43px;
+    width: 5px;
+    height: 5px;
+    background: #111827;
+}
+
+.fox .leg {
+    bottom: 0;
+    width: 11px;
+    height: 17px;
+    background: #7c2d12;
+}
+
+.fox .leg.one {
+    left: 24px;
+}
+
+.fox .leg.two {
+    left: 52px;
+}
+
+.fox .tail {
+    right: -8px;
+    bottom: 34px;
+    width: 28px;
+    height: 13px;
+    background: #dc581f;
+    box-shadow: 8px 0 0 #fef3c7;
+    transform: rotate(-17deg);
 }
 
 .shadow {
@@ -972,6 +1077,10 @@ li {
                 <span class="food-icon bone" aria-hidden="true"></span>
                 <span>Hueso <small>para lobos</small></span>
             </button>
+            <button class="food-button" type="button" data-food="berries" data-target="fox">
+                <span class="food-icon berries" aria-hidden="true"></span>
+                <span>Bayas <small>para zorros</small></span>
+            </button>
         </div>
 
         <div class="pen" aria-label="Corralito pixel art de clientes">
@@ -1028,6 +1137,22 @@ li {
             <div class="client-animal" data-animal="duck">
                 <div class="name-tag">jostinlin</div>
                 <div class="animal duck" aria-label="Pato de jostinlin">
+                    <div class="shadow"></div>
+                    <div class="tail"></div>
+                    <div class="body"></div>
+                    <div class="head"></div>
+                    <div class="snout"></div>
+                    <div class="ear left"></div>
+                    <div class="ear right"></div>
+                    <div class="eye"></div>
+                    <div class="leg one"></div>
+                    <div class="leg two"></div>
+                </div>
+            </div>
+
+            <div class="client-animal" data-animal="fox">
+                <div class="name-tag">wiwi</div>
+                <div class="animal fox" aria-label="Zorro rojo de wiwi">
                     <div class="shadow"></div>
                     <div class="tail"></div>
                     <div class="body"></div>
