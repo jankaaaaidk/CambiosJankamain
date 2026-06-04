@@ -392,6 +392,10 @@ li {
     z-index: 2;
 }
 
+.dropped-food.falling {
+    transition: top 0.55s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
 .dropped-food.eaten {
     opacity: 0;
     transform: translateY(-8px) scale(0.7);
@@ -1270,14 +1274,28 @@ function crearComidaEnCorral(tipo, target, x, y) {
     const pen = document.querySelector(".pen");
     const comida = crearIconoComida(tipo, "dropped-food");
     const safeX = Math.max(18, Math.min(x, pen.clientWidth - 18));
-    const safeY = Math.max(46, Math.min(y, pen.clientHeight - 44));
+    const groundY = pen.clientHeight - 48;
+    const startY = Math.max(46, Math.min(y, groundY));
 
     comida.dataset.target = target;
     comida.style.left = `${safeX - 17}px`;
-    comida.style.top = `${safeY - 17}px`;
+    comida.style.top = `${startY - 17}px`;
     pen.appendChild(comida);
 
-    atraerAnimalesAComida(comida, target, safeX);
+    if (startY < groundY - 2) {
+        comida.classList.add("falling");
+
+        window.requestAnimationFrame(() => {
+            comida.style.top = `${groundY - 17}px`;
+        });
+
+        window.setTimeout(() => {
+            comida.classList.remove("falling");
+            atraerAnimalesAComida(comida, target, safeX);
+        }, 580);
+    } else {
+        atraerAnimalesAComida(comida, target, safeX);
+    }
 }
 
 function atraerAnimalesAComida(comida, target, foodX) {
