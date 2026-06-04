@@ -503,6 +503,20 @@ li {
     transition-timing-function: ease-in-out;
 }
 
+.pen.night .client-animal::after {
+    content: "zzzzz";
+    position: absolute;
+    left: 56%;
+    top: 30px;
+    z-index: 5;
+    color: #dbeafe;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-shadow: 0 2px 0 rgba(0, 0, 0, 0.35);
+    animation: sleepFloat 1.8s ease-in-out infinite;
+}
+
 .client-animal:nth-child(2) {
     left: 12%;
 }
@@ -537,6 +551,18 @@ li {
     height: 64px;
     transform: translateX(-50%);
     image-rendering: pixelated;
+}
+
+.pen.night .animal {
+    bottom: -12px;
+}
+
+.pen.night .animal .leg {
+    display: none;
+}
+
+.pen.night .client-animal.walking .leg {
+    animation: none;
 }
 
 .animal .body,
@@ -830,10 +856,22 @@ li {
     }
 }
 
+@keyframes sleepFloat {
+    0%, 100% {
+        opacity: 0.62;
+        transform: translateY(0);
+    }
+    50% {
+        opacity: 1;
+        transform: translateY(-7px);
+    }
+}
+
 @media (prefers-reduced-motion: reduce) {
     .wave-text span,
     .loading-dots span,
-    .client-animal.walking .leg {
+    .client-animal.walking .leg,
+    .pen.night .client-animal::after {
         animation: none;
     }
 }
@@ -1240,6 +1278,9 @@ function apuntarAnimal(animalBox, nextLeft) {
 }
 
 function programarMovimientoRandom(animalBox, delay) {
+    const pen = animalBox.closest(".pen");
+    if (pen && pen.classList.contains("night")) return;
+
     window.clearTimeout(Number(animalBox.dataset.moveTimer || 0));
     animalBox.dataset.moveTimer = window.setTimeout(
         () => moverAnimalCorral(animalBox),
@@ -1250,7 +1291,7 @@ function programarMovimientoRandom(animalBox, delay) {
 function moverAnimalCorral(animalBox) {
     const pen = animalBox.closest(".pen");
 
-    if (!pen || animalBox.dataset.busy === "true") return;
+    if (!pen || pen.classList.contains("night") || animalBox.dataset.busy === "true") return;
 
     const penWidth = pen.clientWidth;
     const boxWidth = animalBox.offsetWidth;
@@ -1312,10 +1353,28 @@ function actualizarMomentoDelDia() {
     const pen = document.querySelector(".pen");
     if (!pen) return;
 
+    const momentoAnterior = pen.dataset.time;
     const momento = obtenerMomentoDelDia();
     pen.classList.remove("day", "twilight", "night");
     pen.classList.add(momento);
     pen.dataset.time = momento;
+
+    const animales = pen.querySelectorAll(".client-animal");
+
+    if (momento === "night") {
+        animales.forEach((animalBox) => {
+            window.clearTimeout(Number(animalBox.dataset.moveTimer || 0));
+            animalBox.dataset.busy = "false";
+            animalBox.classList.remove("walking");
+        });
+        return;
+    }
+
+    if (momentoAnterior === "night") {
+        animales.forEach((animalBox) => {
+            programarMovimientoRandom(animalBox, numeroAleatorio(500, 2200));
+        });
+    }
 }
 
 function crearIconoComida(tipo, extraClass = "") {
@@ -1406,6 +1465,8 @@ function crearComidaEnCorral(tipo, target, x, y) {
 
 function atraerAnimalesAComida(comida, target, foodX) {
     const pen = comida.closest(".pen");
+    if (pen.classList.contains("night")) return;
+
     const animales = [...pen.querySelectorAll(`.client-animal[data-animal="${target}"]`)];
 
     animales.forEach((animalBox) => {
