@@ -229,6 +229,11 @@ li {
 }
 
 .pen {
+    --sky-top: #6bb7f0;
+    --sky-bottom: #b7e3ff;
+    --grass-top: #3e8f45;
+    --grass-bottom: #2f7a37;
+    --grid-alpha: 0.12;
     position: relative;
     min-height: 230px;
     margin-top: 14px;
@@ -236,10 +241,37 @@ li {
     border: 4px solid #8b5a2b;
     border-radius: 8px;
     background:
-        linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px) 0 0 / 24px 24px,
-        linear-gradient(0deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px) 0 0 / 24px 24px,
-        linear-gradient(#233b2a 0 60%, #2f5b32 60% 100%);
+        linear-gradient(90deg, rgba(255, 255, 255, var(--grid-alpha)) 1px, transparent 1px) 0 0 / 24px 24px,
+        linear-gradient(0deg, rgba(255, 255, 255, calc(var(--grid-alpha) * 0.7)) 1px, transparent 1px) 0 0 / 24px 24px,
+        linear-gradient(var(--sky-top) 0 38%, var(--sky-bottom) 38% 60%, var(--grass-top) 60% 82%, var(--grass-bottom) 82% 100%);
     box-shadow: inset 0 0 0 3px #5d391c;
+    transition: background 0.8s ease, box-shadow 0.8s ease;
+}
+
+.pen.day {
+    --sky-top: #5fb8f2;
+    --sky-bottom: #bce7ff;
+    --grass-top: #42a847;
+    --grass-bottom: #2f8638;
+    --grid-alpha: 0.12;
+}
+
+.pen.twilight {
+    --sky-top: #47316f;
+    --sky-bottom: #f59e5c;
+    --grass-top: #426f39;
+    --grass-bottom: #315d32;
+    --grid-alpha: 0.08;
+    box-shadow: inset 0 0 0 3px #5d391c, inset 0 0 60px rgba(250, 204, 21, 0.14);
+}
+
+.pen.night {
+    --sky-top: #111827;
+    --sky-bottom: #1e2b4f;
+    --grass-top: #233b2a;
+    --grass-bottom: #2f5b32;
+    --grid-alpha: 0.05;
+    box-shadow: inset 0 0 0 3px #5d391c, inset 0 0 80px rgba(15, 23, 42, 0.52);
 }
 
 .pen::before,
@@ -263,6 +295,54 @@ li {
 
 .pen::after {
     bottom: 30px;
+}
+
+.pen .sky-detail {
+    position: absolute;
+    top: 20px;
+    right: 34px;
+    z-index: 1;
+    width: 48px;
+    height: 48px;
+    pointer-events: none;
+}
+
+.pen.day .sky-detail {
+    border-radius: 999px;
+    background: #fde68a;
+    box-shadow: 0 0 0 8px rgba(253, 230, 138, 0.18);
+}
+
+.pen.twilight .sky-detail {
+    width: 54px;
+    height: 18px;
+    top: 54px;
+    border-radius: 999px 999px 0 0;
+    background: #fb923c;
+    box-shadow: 0 0 28px rgba(251, 146, 60, 0.45);
+}
+
+.pen.night .sky-detail {
+    border-radius: 999px;
+    background: #e5e7eb;
+    box-shadow:
+        -260px 18px 0 -21px #f8fafc,
+        -210px -6px 0 -22px #f8fafc,
+        -150px 28px 0 -21px #f8fafc,
+        -94px -12px 0 -22px #f8fafc,
+        -42px 24px 0 -21px #f8fafc,
+        0 0 22px rgba(255, 255, 255, 0.36);
+}
+
+.pen.night .sky-detail::after {
+    content: "";
+    position: absolute;
+    left: 13px;
+    top: -3px;
+    width: 42px;
+    height: 42px;
+    border-radius: 999px;
+    background: #111827;
 }
 
 .hotbar {
@@ -850,6 +930,8 @@ li {
         </div>
 
         <div class="pen" aria-label="Corralito pixel art de clientes">
+            <div class="sky-detail" aria-hidden="true"></div>
+
             <div class="client-animal" data-animal="pig">
                 <div class="name-tag">kim</div>
                 <div class="animal pig" aria-label="Puerco de kim">
@@ -1212,6 +1294,30 @@ function iniciarCorralito() {
     });
 }
 
+function obtenerMomentoDelDia(fecha = new Date()) {
+    const hora = fecha.getHours();
+
+    if (hora === 6 || hora === 18) {
+        return "twilight";
+    }
+
+    if (hora >= 7 && hora < 18) {
+        return "day";
+    }
+
+    return "night";
+}
+
+function actualizarMomentoDelDia() {
+    const pen = document.querySelector(".pen");
+    if (!pen) return;
+
+    const momento = obtenerMomentoDelDia();
+    pen.classList.remove("day", "twilight", "night");
+    pen.classList.add(momento);
+    pen.dataset.time = momento;
+}
+
 function crearIconoComida(tipo, extraClass = "") {
     const food = document.createElement("div");
     food.className = `${extraClass} food-icon ${tipo}`.trim();
@@ -1367,7 +1473,9 @@ function iniciarHotbarComida() {
 actualizarHistorial();
 iniciarMensajesCarga();
 setInterval(obtenerPrecioFinal, 60000);
+setInterval(actualizarMomentoDelDia, 60000);
 obtenerPrecioFinal();
+actualizarMomentoDelDia();
 iniciarCorralito();
 iniciarHotbarComida();
 </script>
