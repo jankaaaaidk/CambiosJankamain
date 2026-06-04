@@ -1175,8 +1175,8 @@ function moverAnimalCorral(animalBox) {
     animalBox.style.right = "auto";
     animalBox.style.transitionDuration = `${duration}s`;
     animalBox.classList.add("walking");
-    animalBox.style.left = `${nextLeft}px`;
     apuntarAnimal(animalBox, nextLeft);
+    animalBox.style.left = `${nextLeft}px`;
 
     window.setTimeout(() => {
         animalBox.classList.remove("walking");
