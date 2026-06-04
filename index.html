@@ -142,6 +142,52 @@ button:disabled {
     margin: 8px 0;
 }
 
+.loading-copy {
+    display: none;
+    min-height: 44px;
+    margin-top: 10px;
+    color: #c7d2fe;
+    font-size: 13px;
+    line-height: 1.45;
+}
+
+.loading-copy.active {
+    display: block;
+}
+
+.wave-text {
+    display: inline-block;
+}
+
+.wave-text span {
+    display: inline-block;
+    animation: waveLetter 1.45s ease-in-out infinite;
+    animation-delay: calc(var(--i) * 0.045s);
+}
+
+.loading-dots {
+    display: inline-flex;
+    gap: 3px;
+    margin-left: 4px;
+    vertical-align: baseline;
+}
+
+.loading-dots span {
+    width: 4px;
+    height: 4px;
+    border-radius: 999px;
+    background: #c7d2fe;
+    animation: dotPulse 1s ease-in-out infinite;
+}
+
+.loading-dots span:nth-child(2) {
+    animation-delay: 0.15s;
+}
+
+.loading-dots span:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
 .muted {
     color: var(--muted);
     font-size: 13px;
@@ -518,6 +564,36 @@ li {
     }
 }
 
+@keyframes waveLetter {
+    0%, 100% {
+        transform: translateY(0);
+        color: #c7d2fe;
+    }
+    45% {
+        transform: translateY(-5px);
+        color: #f8fafc;
+    }
+}
+
+@keyframes dotPulse {
+    0%, 100% {
+        transform: translateY(0);
+        opacity: 0.35;
+    }
+    50% {
+        transform: translateY(-4px);
+        opacity: 1;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .wave-text span,
+    .loading-dots span,
+    .client-animal.walking .leg {
+        animation: none;
+    }
+}
+
 @media (max-width: 900px) {
     .main {
         grid-template-columns: 1fr;
@@ -546,6 +622,14 @@ li {
 
             <div class="result">
                 <p id="tipo">Tipo: ...</p>
+                <div class="loading-copy active" id="loadingCopy">
+                    <span class="wave-text" id="loadingMessage"></span>
+                    <span class="loading-dots" aria-hidden="true">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </span>
+                </div>
                 <p id="recibes">Recibes: -</p>
                 <p id="comision">Comision: -</p>
             </div>
@@ -658,10 +742,22 @@ li {
 const API_URL = "https://cambiosjanka.onrender.com";
 const WHATSAPP_NUMERO = "5491162121656";
 const COMISION_PORCENTAJE = 2.5;
+const FRASES_CARGA = [
+    "Estamos buscando el mejor cambio para ti",
+    "Si abres la pagina en modo escritorio puede que te encuentres con una sorpresa",
+    "No solo busques el mejor cambio, tambien cambia para ser mejor que ayer",
+    "Consultando el mercado para que no cambies a ciegas",
+    "El precio justo tarda un poquito, el mal cambio llega rapido",
+    "Revisando anuncios, filtrando ruido y esquivando precios raros",
+    "Tu cotizacion viene caminando desde el corralito",
+    "Buscando una tasa que trate bien a tus dolares"
+];
 
 let tipoFinalGlobal = 0;
 let ultimaOrden = null;
 let historial = JSON.parse(localStorage.getItem("historial")) || [];
+let fraseCargaIndex = 0;
+let intervaloFrasesCarga = null;
 
 function formatoNumero(valor, decimales = 2) {
     return Number(valor).toLocaleString("es-AR", {
@@ -674,7 +770,52 @@ function obtenerMontoUsd() {
     return Number(document.getElementById("usd").value);
 }
 
+function mostrarFraseCarga(frase) {
+    const loadingMessage = document.getElementById("loadingMessage");
+    if (!loadingMessage) return;
+
+    loadingMessage.innerHTML = "";
+
+    frase.split("").forEach((letra, index) => {
+        const span = document.createElement("span");
+        span.style.setProperty("--i", index);
+        span.textContent = letra === " " ? "\u00a0" : letra;
+        loadingMessage.appendChild(span);
+    });
+}
+
+function iniciarMensajesCarga() {
+    const loadingCopy = document.getElementById("loadingCopy");
+    if (!loadingCopy) return;
+
+    loadingCopy.classList.add("active");
+    mostrarFraseCarga(FRASES_CARGA[fraseCargaIndex]);
+
+    if (intervaloFrasesCarga) return;
+
+    intervaloFrasesCarga = window.setInterval(() => {
+        fraseCargaIndex = (fraseCargaIndex + 1) % FRASES_CARGA.length;
+        mostrarFraseCarga(FRASES_CARGA[fraseCargaIndex]);
+    }, 3600);
+}
+
+function detenerMensajesCarga() {
+    const loadingCopy = document.getElementById("loadingCopy");
+    if (loadingCopy) {
+        loadingCopy.classList.remove("active");
+    }
+
+    if (intervaloFrasesCarga) {
+        window.clearInterval(intervaloFrasesCarga);
+        intervaloFrasesCarga = null;
+    }
+}
+
 async function obtenerPrecioFinal() {
+    if (!tipoFinalGlobal) {
+        iniciarMensajesCarga();
+    }
+
     try {
         const res = await fetch(`${API_URL}/precio`);
         const data = await res.json();
@@ -687,6 +828,7 @@ async function obtenerPrecioFinal() {
 
         document.getElementById("tipo").innerText =
             `Tipo: ${formatoNumero(tipoFinalGlobal)} ARS`;
+        detenerMensajesCarga();
 
         historial.unshift(tipoFinalGlobal.toFixed(2));
         if (historial.length > 10) historial.pop();
@@ -695,6 +837,7 @@ async function obtenerPrecioFinal() {
         actualizarHistorial();
     } catch (e) {
         document.getElementById("tipo").innerText = "Tipo: error";
+        iniciarMensajesCarga();
         console.error(e);
     }
 }
@@ -879,6 +1022,7 @@ function iniciarCorralito() {
 }
 
 actualizarHistorial();
+iniciarMensajesCarga();
 setInterval(obtenerPrecioFinal, 60000);
 obtenerPrecioFinal();
 iniciarCorralito();
